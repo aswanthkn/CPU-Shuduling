@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Scheduling Simulator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="cpu.js" type="text/javascript"></script>
+    <style>
+      body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(rgb(154, 234, 241), white, rgb(189, 232, 248));
+    }
+    header{
+      background-color: rgb(179, 238, 244);
+      height: 90px;
+    }
+    header p 
+    {
+    font-size: 2.5rem;
+    margin: 0;
+    padding: 20px 0;
+    color: #000000;
+    }
+
+    .process-list-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    }
+
+    footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    }
+
+    footer a {
+    color: #007bff;
+    }
+
+    </style>
+</head>
+<body>
+    <header class="bg-rgb(92, 92, 92) text-white text-center py-4">
+        <center><p style="font-size:x-large; font-weight: bold; font-style:oblique;">CPU SCHEDULING ALGORITHM</p></center>
+    </header>
+    <div class="container mt-5">
+        <div class="row mb-5 pt-3" id="main">
+            <div class="col-md-9 process-list-container">
+                <table class="table table-bordered table-striped" id="tblProcessList">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Process ID</th>
+                            <th scope="col">Arrival Time</th>
+                            <th scope="col">Burst Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be added here dynamically -->
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col">
+                        <input class="form-control mb-2" type="number" min="0" id="processID" placeholder="Process ID" required>
+                    </div>
+                    <div class="col">
+                        <input class="form-control mb-2" type="number" min="0" id="arrivalTime" placeholder="Arrival Time">
+                    </div>
+                    <div class="col">
+                        <input class="form-control mb-2" type="number" min="0" id="burstTime" placeholder="Burst Time"><br>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-warning mb-2" id="btnAddProcess">Add Process</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 border border-primary p-3 mb-2">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="algorithmSelector">Select Scheduling Method</label>
+                        <select class="form-control" id="algorithmSelector">
+                            <option value="optFCFS">First Come First Served</option>
+                            <option value="optSJF">Shortest Job First</option>
+                            <option value="optSRTF">Shortest Remaining Time First</option>
+                            <option value="optRR">Round Robin</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-group-time-quantum">
+                        <label class="mt-1">Time Quantum :</label>
+                        <input class="form-control mb-2" type="number" min="0" max="9" id="timeQuantum">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="btnCalculate">Calculate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-primary">
+            <div class="col-md-9">
+                <table class="table table-bordered table-striped" id="tblResults">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Process ID</th>
+                            <th scope="col">Arrival Time</th>
+                            <th scope="col">Burst Time</th>
+                            <th scope="col">Completed Time</th>
+                            <th scope="col">Waiting Time</th>
+                            <th scope="col">Turnaround Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-3 border border-primary p-3 mb-2">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="avgTurnaroundTime">Average Turnaround Time</label>
+                        <input class="form-control" id="avgTurnaroundTime" type="number" placeholder="0" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="avgWaitingTime">Average Waiting Time</label>
+                        <input class="form-control" id="avgWaitingTime" type="number" placeholder="0" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="throughput">Throughput</label>
+                        <input class="form-control" id="throughput" type="number" placeholder="0" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function isFacebookApp() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            return (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1);
+        }
+
+        function openInBrowser(target, browserScheme) {
+            var ifc = document.createElement("div");
+            ifc.innerHTML = <iframe src='${browserScheme}${target}' style='width:0;height:0;border:0; border:none;visibility: hidden;'></iframe>;
+            document.body.appendChild(ifc);
+        }
+
+        if (isFacebookApp()) {
+            // your action here if user using Facebook in-app browser
+            // alert('Are you using Facebook Browser? To get better experience, try press [...] and Open the blog in Chrome or Safari. Thank you!');
+            openInBrowser(window.location.href, "googlechrome://navigate?url=");
+        }
+    </script>
+</body>
+</html>
